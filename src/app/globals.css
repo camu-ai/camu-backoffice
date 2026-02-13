@@ -1,26 +1,228 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --radius: 0.5rem;
+
+  /* Camu brand colors */
+  --background: #ffffff;
+  --foreground: #1e293b;
+  --card: #ffffff;
+  --card-foreground: #1e293b;
+  --popover: #ffffff;
+  --popover-foreground: #111928;
+
+  /* Primary: eggplant (action color) */
+  --primary: #79004a;
+  --primary-foreground: #ffffff;
+
+  /* Secondary: slate */
+  --secondary: #f1f5f9;
+  --secondary-foreground: #334155;
+
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+
+  --accent: #f1f5f9;
+  --accent-foreground: #334155;
+
+  --destructive: #dc2626;
+
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #97025e;
+
+  /* Charts: Camu palette — pink-first to match Figma */
+  --chart-1: #b9037a;
+  --chart-2: #2563eb;
+  --chart-3: #16a34a;
+  --chart-4: #fe4c5c;
+  --chart-5: #f59e0b;
+
+  /* Sidebar: Camu spec */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #334155;
+  --sidebar-accent: #f0f0f0;
+  --sidebar-accent-foreground: #62013d;
+  --sidebar-border: #e2e8f0;
+
+  /* Dashboard semantic colors */
+  --priority-urgent: hsl(0, 84%, 60%);
+  --priority-high: hsl(25, 95%, 53%);
+  --priority-medium: hsl(48, 96%, 53%);
+  --priority-low: hsl(210, 40%, 60%);
+
+  --sla-ok: hsl(142, 71%, 45%);
+  --sla-at-risk: hsl(48, 96%, 53%);
+  --sla-breached: hsl(0, 84%, 60%);
+
+  --handler-sme: hsl(262, 83%, 58%);
+  --handler-engineer: hsl(210, 84%, 55%);
+  --handler-product: hsl(142, 71%, 45%);
+
+  --state-new: hsl(210, 84%, 55%);
+  --state-waiting-us: hsl(25, 95%, 53%);
+  --state-waiting-customer: hsl(210, 40%, 60%);
+  --state-on-hold: hsl(210, 20%, 50%);
+  --state-closed: hsl(210, 10%, 40%);
+}
+
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --card: #1e293b;
+  --card-foreground: #f1f5f9;
+  --popover: #1e293b;
+  --popover-foreground: #f1f5f9;
+
+  --primary: #b9037a;
+  --primary-foreground: #ffffff;
+
+  --secondary: #334155;
+  --secondary-foreground: #f1f5f9;
+
+  --muted: #334155;
+  --muted-foreground: #94a3b8;
+
+  --accent: #334155;
+  --accent-foreground: #f1f5f9;
+
+  --destructive: #dc2626;
+
+  --border: #475569;
+  --input: #475569;
+  --ring: #b9037a;
+
+  --chart-1: #d946a8;
+  --chart-2: #60a5fa;
+  --chart-3: #4ade80;
+  --chart-4: #fe4c5c;
+  --chart-5: #fbbf24;
+
+  --sidebar: #1e293b;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-accent: #334155;
+  --sidebar-accent-foreground: #f472b6;
+  --sidebar-border: #475569;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), Inter, sans-serif;
+}
+
+/* Camu toast / sonner styles */
+[data-sonner-toaster] [data-sonner-toast] {
+  --normal-bg: #0f172a;
+  --normal-text: #ffffff;
+  --normal-border: transparent;
+  background-color: #0f172a;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.25);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="error"] {
+  --error-bg: #dc2626;
+  --error-text: #ffffff;
+  --error-border: transparent;
+  background-color: #dc2626;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="success"] {
+  --success-bg: #16a34a;
+  --success-text: #ffffff;
+  --success-border: transparent;
+  background-color: #16a34a;
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-button] {
+  background-color: #334155;
+  color: #ffffff;
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-close-button] {
+  background-color: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-close-button]:hover {
+  color: #ffffff;
+}
+
+/* Recharts refinements — match Camu Figma */
+[data-slot="chart"] .recharts-cartesian-grid line {
+  stroke: #f1f5f9;
+  stroke-width: 1;
+}
+.dark [data-slot="chart"] .recharts-cartesian-grid line {
+  stroke: #334155;
+}
+
+[data-slot="chart"] .recharts-cartesian-axis-tick text {
+  fill: #94a3b8;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+[data-slot="chart"] .recharts-cartesian-axis-line {
+  stroke: #e2e8f0;
+  stroke-width: 1;
+}
+.dark [data-slot="chart"] .recharts-cartesian-axis-line {
+  stroke: #475569;
+}
+
+[data-slot="chart"] .recharts-legend-item-text {
+  font-size: 12px !important;
+  font-weight: 500;
+  color: #64748b !important;
+}
+
+/* Sparkline container — no axes, no grid, pure mini-chart */
+[data-slot="sparkline"] .recharts-cartesian-grid,
+[data-slot="sparkline"] .recharts-xAxis,
+[data-slot="sparkline"] .recharts-yAxis {
+  display: none;
 }

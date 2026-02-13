@@ -1,0 +1,42 @@
+runConfig:
+  runtime: nodejs22
+  maxInstances: 3
+  minInstances: 0
+  concurrency: 80
+
+env:
+  # Database (Neon Postgres)
+  - variable: DATABASE_URL
+    secret: database-url
+  - variable: DIRECT_URL
+    secret: direct-url
+
+  # Pylon API
+  - variable: PYLON_API_TOKEN
+    secret: pylon-api-token
+
+  # Auth (Better Auth + Google OAuth)
+  - variable: BETTER_AUTH_SECRET
+    secret: better-auth-secret
+  - variable: BETTER_AUTH_URL
+    value: https://support.camu.ai
+  - variable: GOOGLE_CLIENT_ID
+    secret: google-client-id
+  - variable: GOOGLE_CLIENT_SECRET
+    secret: google-client-secret
+
+  # AI Canvas (Claude Agent SDK)
+  - variable: ANTHROPIC_API_KEY
+    secret: anthropic-api-key
+
+  # Cron auth (Cloud Scheduler → /api/sync)
+  - variable: CRON_SECRET
+    secret: cron-secret
+
+  # Observability
+  - variable: LANGFUSE_PUBLIC_KEY
+    secret: langfuse-public-key
+  - variable: LANGFUSE_SECRET_KEY
+    secret: langfuse-secret-key
+  - variable: LANGFUSE_BASE_URL
+    value: https://us.cloud.langfuse.com

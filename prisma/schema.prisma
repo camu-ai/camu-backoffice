@@ -1,0 +1,195 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Core Tables ────────────────────────────────────────
+
+model Issue {
+  id    String @id
+  title String
+  state String
+  priority String?
+  source   String?
+
+  category       String?
+  handler        String?
+  resolutionType String? @map("resolution_type")
+  selfServable   String? @map("self_servable")
+
+  accountId  String?  @map("account_id")
+  account    Account? @relation(fields: [accountId], references: [id])
+  assigneeId String?  @map("assignee_id")
+  assignee   User?    @relation(fields: [assigneeId], references: [id])
+  messages   Message[]
+
+  createdAt DateTime  @map("created_at")
+  closedAt  DateTime? @map("closed_at")
+
+  firstResponseAt               DateTime? @map("first_response_at")
+  firstResponseSeconds          Int?      @map("first_response_seconds")
+  businessHoursFirstResponseSec Int?      @map("business_hours_first_response_seconds")
+  resolutionTime                DateTime? @map("resolution_time")
+
+  bodyHtml       String? @map("body_html")
+  numberOfTouches Int?   @map("number_of_touches")
+  link           String?
+  type           String?
+  tags           String[] @default([])
+
+  syncedAt DateTime @map("synced_at")
+
+  @@index([state])
+  @@index([priority])
+  @@index([category])
+  @@index([handler])
+  @@index([accountId])
+  @@index([createdAt])
+  @@index([closedAt])
+  @@index([state, priority])
+  @@index([state, priority, createdAt])
+  @@index([assigneeId, createdAt])
+  @@map("issues")
+}
+
+model Account {
+  id     String  @id
+  name   String
+  domain String?
+
+  issues Issue[]
+
+  syncedAt DateTime @map("synced_at")
+
+  @@map("accounts")
+}
+
+model User {
+  id    String  @id
+  name  String
+  email String?
+
+  issues Issue[]
+
+  syncedAt DateTime @map("synced_at")
+
+  @@map("users")
+}
+
+model Message {
+  id         String  @id
+  issueId    String  @map("issue_id")
+  issue      Issue   @relation(fields: [issueId], references: [id])
+  senderType String  @map("sender_type")
+  senderName String? @map("sender_name")
+  bodyText   String? @map("body_text")
+  bodyHtml   String? @map("body_html")
+
+  createdAt DateTime @map("created_at")
+
+  syncedAt DateTime @map("synced_at")
+
+  @@index([issueId])
+  @@index([issueId, senderType, createdAt])
+  @@map("messages")
+}
+
+// ─── Auth (Better Auth) ─────────────────────────────────
+
+model AuthUser {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @map("email_verified")
+  image         String?
+  createdAt     DateTime  @map("created_at")
+  updatedAt     DateTime  @map("updated_at")
+
+  sessions      AuthSession[]
+  accounts      AuthAccount[]
+
+  @@map("auth_users")
+}
+
+model AuthSession {
+  id        String   @id
+  expiresAt DateTime @map("expires_at")
+  token     String   @unique
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @map("updated_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+
+  userId String   @map("user_id")
+  user   AuthUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("auth_sessions")
+}
+
+model AuthAccount {
+  id                    String    @id
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  userId                String    @map("user_id")
+  user                  AuthUser  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @map("created_at")
+  updatedAt             DateTime  @map("updated_at")
+
+  @@map("auth_accounts")
+}
+
+model AuthVerification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime  @map("expires_at")
+  createdAt  DateTime? @map("created_at")
+  updatedAt  DateTime? @map("updated_at")
+
+  @@map("auth_verifications")
+}
+
+// ─── Sync Infrastructure ────────────────────────────────
+
+model SyncLog {
+  id        String    @id @default(cuid())
+  startedAt DateTime  @map("started_at")
+  endedAt   DateTime? @map("ended_at")
+  status    String
+
+  issuesSynced   Int @default(0) @map("issues_synced")
+  accountsSynced Int @default(0) @map("accounts_synced")
+  messagesSynced Int @default(0) @map("messages_synced")
+
+  errors String?
+
+  lastIssueUpdatedAt DateTime? @map("last_issue_updated_at")
+
+  @@map("sync_log")
+}
+
+// ─── AI Canvas ─────────────────────────────────────────
+
+model SavedView {
+  id        String   @id @default(cuid())
+  title     String
+  prompt    String
+  spec      Json
+  sessionId String?  @map("session_id")
+  createdBy String   @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+  isPinned  Boolean  @default(false) @map("is_pinned")
+
+  @@map("saved_views")
+}
